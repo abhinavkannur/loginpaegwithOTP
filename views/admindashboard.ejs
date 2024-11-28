@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title class="admindash">Admin Dashboard</title>
+  <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+  
+  <!-- Search Bar -->
+  <div class="small-search-bar">
+    
+    <form action="/adminsearch" method="get">
+      <input type="text" name="q" id="searchInput" placeholder="Search users..." />
+      <button type="submit">SEARCH</button>
+      <form action="/adminlogout" method="POST">
+        <button type="submit" class="logoutbtn1">Logout</button>
+      </form>
+      
+    </form>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(user => { %>
+        <tr>
+          <td><%= user.id %></td>
+          <td><%= user.username %></td>
+          <td><%= user.email %></td>
+          <td>
+            <a href="/user-update/<%= user.id %>" class="update-icon">✎</a>
+            <a href="/delete/<%= user.id %>" class="delete-icon">❌</a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+</body>
+</html>

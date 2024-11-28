@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <main id="main-container">
+        <h2>OTP Verification</h2>
+        <p>Enter the OTP sent to your email</p>
+        <form action="/otp" method="POST">
+            <input type="hidden" name="email" value="<%= email %>">
+            <label for="otp-code">OTP</label>
+            <input type="text" id="otp-code" name="otp" required>
+            <% if (message) { %>
+              <p class="error-message"><%= message %></p>
+            <% } %>
+            <button type="submit">Verify</button>
+          </form>
+          
+    </main>
+</body>
+</html>

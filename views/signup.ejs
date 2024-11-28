@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <link rel="stylesheet" href="/style.css">
+    <script>
+        // Function to ensure the password input field stays enabled and enforce password length
+        function checkPasswordLength() {
+            var passwordInput = document.getElementById('signup-password');
+            var passwordLength = passwordInput.value.length;
+    
+            // Remove the disabling condition
+            if (passwordLength >= 6) {
+                // You can add a check here for password strength or other validation if needed
+            }
+        }
+    </script>
+    
+</head>
+<body>
+    <main id="main-container">
+        <h2>Signup</h2>
+        <form action="/signup" method="POST">
+            <label for="signup-username">Username</label>
+            <input type="text" id="signup-username" name="username" required>
+
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" name="email" required>
+
+            <label for="signup-password">Password</label>
+            <input type="password" id="signup-password" name="password" required oninput="checkPasswordLength()">
+            
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="/login">Login here</a></p>
+    </main>
+</body>
+</html>
