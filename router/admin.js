@@ -81,5 +81,66 @@ router.get('/adminsearch', async (req, res) => {
   }
 });
 
+//user update
+
+router.get('/updateUser/:id',async (req,res)=>{
+  try{
+    const user=await User.findById(req.params.id);//find user id
+    if(!user){
+      return res.status(404).send('user not found');
+    }
+    return res.render('updateUser',{user});
+  }catch(error){
+    console.error('error in user updating',error);
+    re.status(500).redirect('admindashboard')
+  }
+})
+
+router.post('/updateUser/:id',async(req,res)=>{
+  const {username,email}=req.body;
+  try{
+    const user=await User.findByIdAndUpdate(
+      req.params.id,
+      {username,email},
+      {new:true}
+    );
+    if(!user){
+      res.status(404).send('user not found');
+    }
+    res.redirect('/admindashboard');
+  }catch(error){
+    console.error('error in user updating',error);
+    res.status(500).send('server error');
+  }
+
+});
+//logout
+router.post('/adminlogout',(req,res)=>{
+  res.clearCookie('token'); 
+  res.redirect('/adminlogin')
+})
+
+// userblock and unblock
+router.post('/toggleBlockUser/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    user.blocked = !user.blocked; // Toggle the blocked status
+    await user.save();
+
+    const action = user.blocked ? 'blocked' : 'unblocked';
+    console.log(`Admin ${action} user: ${user.username}`);
+
+    res.redirect('/admindashboard'); // Redirect to the admin dashboard
+  } catch (error) {
+    console.error('Error toggling block status:', error);
+    res.status(500).send('Server error');
+  }
+});
+
 
 module.exports = router;

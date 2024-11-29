@@ -87,8 +87,16 @@ button:hover {
 
 .small-search-bar {
   display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 20px;
+}
+
+.small-search-bar form {
+  display: flex;
+  align-items: center;
 }
 
 .small-search-bar input[type="text"] {
@@ -104,13 +112,13 @@ button:hover {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
-  background-color: #007bff;
+  background-color: #28a745; /* Green color for search bar */
   color: #fff;
   cursor: pointer;
 }
 
 .small-search-bar button:hover {
-  background-color: #0056b3;
+  background-color: #218838;
 }
 
 table {
@@ -176,6 +184,32 @@ td {
   color: #18375a;
   font-weight: bolder;
 }
-.logoutbtn1{
-  background: #ff0000;
+
+/* Logout Button Specific Styles */
+.logoutbtn1 {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #dc3545; /* Red color */
+  color: #fff;
+  cursor: pointer;
 }
+
+.logoutbtn1:hover {
+  background-color: #c82333; /* Darker red on hover */
+}
+
+/* Block Button Specific Styles */
+.blockbtn1 {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #dc3545; /* Match table header color */
+  color: #fff;
+  cursor: pointer;
+}
+
+.blockbtn1:hover {
+  background-color: #c82333; /* Darker red on hover */
+}
+

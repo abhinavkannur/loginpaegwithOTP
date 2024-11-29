@@ -2,19 +2,27 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
+  // username: {
+  //   type: String,
+  //   required: [true, 'Username is required'],
+  //   trim: true,
+  //   minlength: [3, 'Username must be at least 3 characters long'],
+  //   maxlength: [50, 'Username cannot exceed 50 characters'],
+  //   match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'],
+  // },
   username: {
     type: String,
-    required: [true, 'Username is required'],
-    trim: true,
-    minlength: [3, 'Username must be at least 3 characters long'],
-    maxlength: [50, 'Username cannot exceed 50 characters'],
-    match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'],
+    required: true,
+    unique: true,
+    match: /^[a-zA-Z0-9_ ]+$/, // Allow letters, numbers, underscores, and spaces
   },
+
   email: {
     type: String,
     required: [true, 'Email is required'],
     unique: true,
     trim: true,
+    index: true,
     lowercase: true,
     match: [/.+@.+\..+/, 'Invalid email format'],
   },
@@ -61,6 +69,7 @@ userSchema.pre('save', async function(next) {
   } else {
     next();
   }
+  console.log(password)
 });
 
 module.exports = mongoose.model('User', userSchema);

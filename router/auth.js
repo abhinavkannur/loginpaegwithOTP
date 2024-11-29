@@ -51,7 +51,7 @@ router.post('/signup', async (req, res) => {
 
     const mailOptions = {
       to: email,
-      from: 'your-email@gmail.com', // Change this
+      from: 'abhinavpp4326@gmail.com', 
       subject: 'OTP Verification',
       text: `Your OTP is: ${otp}`,
     };
@@ -124,6 +124,9 @@ router.get('/home', async (req, res) => {
     if (!user || !user.isVerified) {
       return res.redirect('/login');
     }
+    if(user.blocked){
+      res.render('serverunavailable');
+    }
     res.render('home', { user });
   } catch (error) {
     console.log(error);
@@ -138,6 +141,7 @@ router.get('/login', (req, res) => {
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
+  console.log(req.body)
 
   try {
     const user = await User.findOne({ email });
@@ -146,15 +150,18 @@ router.post('/login', async (req, res) => {
       return res.render('login', { message: 'Invalid credentials' });
     }
 
+
     if (!user.isVerified) {
       console.log('Login failed: User not verified');
       return res.render('login', { message: 'Please verify your email first' });
     }
 
+    console.log(password)
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       console.log('Login failed: Invalid password');
       return res.render('login', { message: 'Invalid credentials' });
+  
     }
 
     console.log('Login successful:', user.email);
@@ -210,6 +217,8 @@ router.get('/profile', async (req, res) => {
     return res.redirect('/login');
   }
 });
+
+
 
 
 module.exports = router;
