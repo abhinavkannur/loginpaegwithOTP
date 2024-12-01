@@ -6,9 +6,20 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const User = require('../model/User');
 const crypto = require('crypto');
+const { render } = require('ejs');
 const router = express.Router();
 
 const JWT_SECRET = 'your-very-secure-secret-key';
+
+
+  // otp email transform configuration
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'abhinavpp4326@gmail.com', 
+      pass: 'tqht njlz yhsz muse', 
+    },
+  });
 
 // Signup
 router.get('/signup', (req, res) => {
@@ -40,14 +51,7 @@ router.post('/signup', async (req, res) => {
     const newUser = new User({ username, email, password: hashedPassword, otp });
     await newUser.save();
 
-    // Send OTP via email
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'abhinavpp4326@gmail.com', 
-        pass: 'tqht njlz yhsz muse', 
-      },
-    });
+  
 
     const mailOptions = {
       to: email,
@@ -157,7 +161,9 @@ router.post('/login', async (req, res) => {
     }
 
     console.log(password)
+    console.log(user.password);
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log(isPasswordValid)
     if (!isPasswordValid) {
       console.log('Login failed: Invalid password');
       return res.render('login', { message: 'Invalid credentials' });
@@ -186,6 +192,7 @@ router.post('/login', async (req, res) => {
 router.get('/logout', (req, res) => {
   try {
     res.clearCookie('token');
+    
     res.redirect('/login');
   } catch (error) {
     console.error('Error during logout:', error);
@@ -215,6 +222,109 @@ router.get('/profile', async (req, res) => {
   } catch (error) {
     console.error('Error fetching user:', error);
     return res.redirect('/login');
+  }
+});
+
+//forgotpassword
+
+
+
+router.get('/forgot-password',(req,res)=>{
+  const { email } = req.query;  
+  res.render('forgot-password');
+})
+
+router.post('/forgot-password',async (req,res)=>{
+  const {email}=req.body;
+  try{
+    const user= await User.findOne({email})
+    if(!user){
+      return res.status(400).message('user not found');
+    }
+    //otp generating
+    const otp=crypto.randomInt(100000,999999).toString();
+    user.otp=otp;
+    user.otpExpires=Date.now()+15*60*1000;//otp expires in 15minutes
+    await user.save();
+
+    const mailOptions = {
+      to: email,
+      from: 'abhinavpp4326@gmail.com',
+      subject: 'Password Reset OTP',
+      text: `Your OTP for password reset is: ${otp}`,
+    };
+    await transporter.sendMail(mailOptions);
+
+
+    res.render('otp-verify',{email});
+  }catch(error){
+    console.error(error);
+    res.status(500).render('otp-verify',{message:'server error',email});
+  }
+    })
+
+    //forgot password otp verifiaction
+
+router.get('/otp-verify',(req,res)=>{``
+  res.render('otp-verify');
+});
+router.post('/otp-verify',async(req,res)=>{
+  const {email,otp}=req.body;
+  try{
+    const user=await User.findOne({email});
+    if(!user || user.otp !==otp ||user.otpExpires<Date.now()){
+      return res.render('otp-verify',{message:'invalid or expired otp',email});
+    }
+    user.otp=null;
+    user.otpExpires=null;
+    await user.save()
+    res.render('set-new-password',{email});
+  
+  }catch(error){
+    console.log(error);
+    res.status(500).render('otp-verify',{message:'server error',email});
+  }
+});
+
+//set new password
+
+router.get('/set-new-password', (req, res) => {
+  const { email } = req.query;  // Get email from query params
+  res.render('set-new-password', { email });  // Pass the email to the template
+});
+router.post('/set-new-password', async (req, res) => {
+  const { email, 'new-password': newPassword, 'confirm-password': confirmPassword } = req.body;
+  // Debugging
+  console.log('Received form data:', req.body); 
+  console.log('Email for password reset:', email);
+
+
+  // Validate password match
+  if (newPassword !== confirmPassword) {
+    return res.render('set-new-password', { message: 'Passwords do not match', email });
+  }
+
+  try {
+    // Find user by email
+    const user = await User.findOne({ email });
+    console.log('user found',user)
+    if (!user) {
+      return res.render('set-new-password', { message: 'User not found', email });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+   console.log('hashhed password:',hashedPassword)
+    // Update the user's password
+    user.password = hashedPassword;
+    await user.save();
+    console.log('Password updated successfully for user:', user.email);
+
+    // Redirect to login
+    res.redirect('/login');
+  } catch (error) {
+    console.error('Error updating password:', error);
+    res.status(500).render('set-new-password', { message: 'Server error', email });
   }
 });
 

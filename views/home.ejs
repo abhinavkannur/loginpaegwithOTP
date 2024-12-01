@@ -25,5 +25,12 @@
     <footer id="footer">
         <p>&copy; 2024 All Rights Reserved.</p>
     </footer>
+    <script>
+        // Push state to prevent back navigation
+        history.pushState(null, null, window.location.href);
+        window.onpopstate = function () {
+            history.pushState(null, null, window.location.href);
+        };
+    </script>
 </body>
 </html>

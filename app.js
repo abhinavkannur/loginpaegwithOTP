@@ -14,7 +14,6 @@ mongoose
 .catch((err)=>console.log('error in mongodb connection ',err));
 
 //middleware
-
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended:true}));
